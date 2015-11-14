@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private WifiCursorAdapter cursorAdapter;
     private List<WifiListItem> dataList;
     Cursor cursor;
+    private boolean registedReceiver = false;
 
     private boolean isScanning = false;
 
@@ -78,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
                     if (D) {
                         Log.d(TAG, "Cursor station: " + sp_station.getSelectedItem().toString());
                     }
+                    unregisterReceiver(wifiScanReceiver);
+                    registedReceiver = false;
+
                     cursor = dbHelper.queryTracking(sp_station.getSelectedItem().toString());
                     cursorAdapter =
                             new WifiCursorAdapter(MainActivity.this, cursor, 0);
@@ -89,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
                     bt_refresh.setEnabled(false);
                     bt_start_stop.setText("START");
                 } else { // ready to scan before click.
+                    registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                    registedReceiver = true;
+
                     dataList.clear();
                     adapter = new WifiListAdapter(getLayoutInflater(), dataList);
                     lv_data.setAdapter(adapter);
@@ -189,15 +196,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        if (!registedReceiver) {
+            registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            registedReceiver = true;
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(wifiScanReceiver);
-        if (cursor != null) {
-            cursor.close();
+        if (registedReceiver) {
+            unregisterReceiver(wifiScanReceiver);
+            registedReceiver = false;
         }
     }
 
@@ -214,6 +224,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (cursor != null) {
+            cursor.close();
+        }
         dbHelper.close();
     }
 
