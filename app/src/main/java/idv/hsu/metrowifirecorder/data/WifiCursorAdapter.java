@@ -71,7 +71,7 @@ public class WifiCursorAdapter extends CursorAdapter {
         if (dbHelper.isBssidRedundant(cursor.getString(holder.idx_bssid))) {
             holder.tv_bssid.setBackgroundColor(mContext.getResources().getColor(R.color.colorAccent));
         } else {
-            holder.tv_bssid.setBackgroundColor(mContext.getResources().getColor(android.R.color.white));
+            holder.tv_bssid.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
         }
         holder.tv_ssid.setText(cursor.getString(holder.idx_ssid));
         holder.tv_capab.setText(cursor.getString(holder.idx_capab));
