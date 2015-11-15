@@ -1,5 +1,7 @@
 package idv.hsu.metrowifirecorder.data;
 
+import java.util.HashMap;
+
 public class DbSchema {
     // DATABASE
     public static final String DB_NAME = "metro";
@@ -32,4 +34,6 @@ public class DbSchema {
     public static final String MAC = "MAC";
     public static final String MANUFACTURE = "MANUFACTURER";
     public static final String ADDRESS = "ADDRESS";
+
+    public static final HashMap<String, String> AP_NAME = new HashMap<>();
 }

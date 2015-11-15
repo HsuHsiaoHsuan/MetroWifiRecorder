@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.io.OutputStream;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String TAG = DbSchema.class.getSimpleName();
-    private static final boolean D = false;
+    private static final boolean D = true;
 
     private SQLiteDatabase db;
     private Context mContext;
@@ -29,6 +30,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void create() throws IOException {
+        if (D) {
+            Log.d(TAG, "create()");
+        }
         boolean check = checkDatabase();
 
         SQLiteDatabase db_read = null;
@@ -61,6 +65,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     private boolean checkDatabase() {
+        if (D) {
+            Log.d(TAG, "checkDatabase()");
+        }
         SQLiteDatabase db_check = null;
         try {
             db_check = SQLiteDatabase.openDatabase(DB_PATH, null, SQLiteDatabase.OPEN_READWRITE);
@@ -73,6 +80,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     private void copyDatabase() throws IOException {
+        if (D) {
+            Log.d(TAG, "copyDatabase()");
+        }
         InputStream inputStream = mContext.getAssets().open(DbSchema.DB_NAME);
         OutputStream outputStream = new FileOutputStream(DB_PATH);
         byte[] buffer = new byte[1024];
@@ -86,12 +96,27 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void open() throws SQLiteException {
+        if (D) {
+            Log.d(TAG, "open()");
+        }
         db = SQLiteDatabase.openDatabase(DB_PATH, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
     public long insertTracking(ContentValues values) {
         long result = db.insert(DbSchema.TABLE_TRACKING, null, values);
 
+        return result;
+    }
+
+    public boolean isBssidRedundant(String bssid) {
+        Cursor cursor = db.query(DbSchema.TABLE_TRACKING,
+                new String[]{DbSchema.BSSID}, DbSchema.BSSID + "=?",
+                new String[]{bssid}, null, null, null);
+        return (cursor.getCount() > 1);
+    }
+
+    public int resetStationData(String station) {
+        int result = db.delete(DbSchema.TABLE_TRACKING, DbSchema.STATION + "=?", new String[] {station});
         return result;
     }
 
@@ -106,13 +131,10 @@ public class DbHelper extends SQLiteOpenHelper {
                         DbSchema.LEVEL,
                         DbSchema.STATION},
                 DbSchema.STATION + "=?", new String[] {station}, null, null, null);
-//        Cursor cursor = db.rawQuery("SELECT  * FROM " + DbSchema.TABLE_TRACKING, null);
         if (cursor != null) {
             cursor.moveToFirst();
-//            db.close();
             return cursor;
         }
-//        db.close();
         return null;
     }
 

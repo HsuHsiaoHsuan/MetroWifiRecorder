@@ -2,6 +2,7 @@ package idv.hsu.metrowifirecorder.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,20 @@ import java.io.IOException;
 import idv.hsu.metrowifirecorder.R;
 
 public class WifiCursorAdapter extends CursorAdapter {
+    private static final String TAG = WifiCursorAdapter.class.getSimpleName();
+    private static final boolean D = true;
+
+    private Context mContext;
     private LayoutInflater inflater;
     private WifiChannels<EnumChannels> channels;
+    private DbHelper dbHelper;
 
-    public WifiCursorAdapter(Context context, Cursor cursor, int flag) {
+    public WifiCursorAdapter(Context context, Cursor cursor, int flag, DbHelper dbHelper) {
         super(context, cursor, 0);
+        mContext = context;
         channels = new WifiChannels<EnumChannels>(EnumChannels.class);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.dbHelper = dbHelper;
     }
 
     private static class WifiViewHolder {
@@ -60,6 +68,11 @@ public class WifiCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         WifiViewHolder holder = (WifiViewHolder) view.getTag();
         holder.tv_bssid.setText(cursor.getString(holder.idx_bssid));
+        if (dbHelper.isBssidRedundant(cursor.getString(holder.idx_bssid))) {
+            holder.tv_bssid.setBackgroundColor(mContext.getResources().getColor(R.color.colorAccent));
+        } else {
+            holder.tv_bssid.setBackgroundColor(mContext.getResources().getColor(android.R.color.white));
+        }
         holder.tv_ssid.setText(cursor.getString(holder.idx_ssid));
         holder.tv_capab.setText(cursor.getString(holder.idx_capab));
         StringBuilder channel = new StringBuilder("");
@@ -75,6 +88,10 @@ public class WifiCursorAdapter extends CursorAdapter {
         }
         holder.tv_frequency.setText(cursor.getString(holder.idx_freq) + channel);
         holder.tv_level.setText(cursor.getString(holder.idx_levle));
+
+        if (D) {
+            Log.d(TAG, "資料位置: " + cursor.getString(cursor.getColumnIndexOrThrow(DbSchema.STATION)));
+        }
     }
 
 }

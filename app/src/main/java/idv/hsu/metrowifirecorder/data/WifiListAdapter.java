@@ -13,7 +13,7 @@ import idv.hsu.metrowifirecorder.R;
 
 public class WifiListAdapter extends BaseAdapter {
     private static final String TAG = WifiListAdapter.class.getSimpleName();
-    private static final boolean D = false;
+    private static final boolean D = true;
 
     private LayoutInflater inflater;
     private List<WifiListItem> dataList;
