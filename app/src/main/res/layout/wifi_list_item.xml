@@ -24,6 +24,15 @@
         android:textAppearance="@android:style/TextAppearance.Large"/>
 
     <TextView
+        android:id="@+id/tv_manufacturer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/tv_bssid_value"
+        android:paddingLeft="8dp"
+        android:textAppearance="@android:style/TextAppearance.Small"/>
+
+    <TextView
         android:id="@+id/tv_ssid_name"
         android:text="SSID--"
         android:layout_width="wrap_content"

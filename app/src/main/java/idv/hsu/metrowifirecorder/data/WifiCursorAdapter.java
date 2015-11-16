@@ -32,6 +32,7 @@ public class WifiCursorAdapter extends CursorAdapter {
 
     private static class WifiViewHolder {
         private TextView tv_bssid;
+        private TextView tv_manufacturer;
         private TextView tv_ssid;
         private TextView tv_capab;
         private TextView tv_frequency;
@@ -49,6 +50,7 @@ public class WifiCursorAdapter extends CursorAdapter {
         View view = inflater.inflate(R.layout.wifi_list_item, null);
         WifiViewHolder holder = new WifiViewHolder();
         holder.tv_bssid = (TextView) view.findViewById(R.id.tv_bssid_value);
+        holder.tv_manufacturer = (TextView) view.findViewById(R.id.tv_manufacturer);
         holder.tv_ssid = (TextView) view.findViewById(R.id.tv_ssid_value);
         holder.tv_capab = (TextView) view.findViewById(R.id.tv_capabilities_value);
         holder.tv_frequency = (TextView) view.findViewById(R.id.tv_frequency_value);
@@ -73,6 +75,7 @@ public class WifiCursorAdapter extends CursorAdapter {
         } else {
             holder.tv_bssid.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));
         }
+        holder.tv_manufacturer.setText(dbHelper.queryManufacture(cursor.getString(holder.idx_bssid)));
         holder.tv_ssid.setText(cursor.getString(holder.idx_ssid));
         holder.tv_capab.setText(cursor.getString(holder.idx_capab));
         StringBuilder channel = new StringBuilder("");

@@ -108,11 +108,12 @@ public class MainActivity extends AppCompatActivity {
                     registedReceiver = true;
 
                     dataList.clear();
-                    adapter = new WifiListAdapter(getLayoutInflater(), dataList);
+                    adapter = new WifiListAdapter(getLayoutInflater(), dataList, dbHelper);
                     lv_data.setAdapter(adapter);
 
-                    wifiManager.setWifiEnabled(true);
-                    wifiManager.startScan();
+//                    wifiManager.setWifiEnabled(true);
+//                    wifiManager.startScan();
+                    startScan();
 
                     isScanning = true;
                     sp_line.setEnabled(false);
@@ -127,8 +128,9 @@ public class MainActivity extends AppCompatActivity {
         bt_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wifiManager.setWifiEnabled(true);
-                wifiManager.startScan();
+                startScan();
+//                wifiManager.setWifiEnabled(true);
+//                wifiManager.startScan();
             }
         });
         lv_data = (ListView) findViewById(R.id.lv_data);
@@ -201,16 +203,31 @@ public class MainActivity extends AppCompatActivity {
 
         lv_data = (ListView) findViewById(R.id.lv_data);
         dataList = new ArrayList<WifiListItem>();
-        adapter = new WifiListAdapter(getLayoutInflater(), dataList);
+        adapter = new WifiListAdapter(getLayoutInflater(), dataList, dbHelper);
         lv_data.setAdapter(adapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (D) {
+            Log.d(TAG, "onResume()");
+        }
+//        if (!registedReceiver) {
+//            registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+//            registedReceiver = true;
+//        }
+    }
+
+    public void startScan() {
         if (!registedReceiver) {
             registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
             registedReceiver = true;
+            wifiManager.setWifiEnabled(true);
+            wifiManager.startScan();
+        } else {
+            wifiManager.setWifiEnabled(true);
+            wifiManager.startScan();
         }
     }
 
@@ -289,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
                                     "level: " + scanResults.get(x).level
                     );
                 }
-                if (DbSchema.AP_NAME.containsKey(result.SSID)) {
+//                if (DbSchema.AP_NAME.containsKey(result.SSID)) {
                     ContentValues values = new ContentValues();
                     values.put(DbSchema.BSSID, result.BSSID);
                     values.put(DbSchema.SSID, result.SSID);
@@ -298,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                     values.put(DbSchema.LEVEL, result.level);
                     values.put(DbSchema.STATION, nowStation);
                     dbHelper.insertTracking(values);
-                }
+//                }
             }
             Toast.makeText(MainActivity.this, "現在站台：" + nowStation, Toast.LENGTH_SHORT).show();
             adapter.notifyDataSetChanged();

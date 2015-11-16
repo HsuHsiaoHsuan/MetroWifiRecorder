@@ -18,11 +18,13 @@ public class WifiListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private List<WifiListItem> dataList;
     private WifiChannels<EnumChannels> channles;
+    private DbHelper dbHelper;
 
-    public WifiListAdapter(LayoutInflater inflater, List<WifiListItem> list) {
+    public WifiListAdapter(LayoutInflater inflater, List<WifiListItem> list, DbHelper dbHelper) {
         this.inflater = inflater;
         dataList = list;
         channles = new WifiChannels<EnumChannels>(EnumChannels.class);
+        this.dbHelper = dbHelper;
     }
 
     @Override
@@ -42,12 +44,14 @@ public class WifiListAdapter extends BaseAdapter {
 
     private static class WifiViewHolder {
         private TextView tv_bssid;
+        private TextView tv_manufacturer;
         private TextView tv_ssid;
         private TextView tv_capab;
         private TextView tv_frequency;
         private TextView tv_level;
         public WifiViewHolder(View view) {
             tv_bssid = (TextView) view.findViewById(R.id.tv_bssid_value);
+            tv_manufacturer = (TextView) view.findViewById(R.id.tv_manufacturer);
             tv_ssid = (TextView) view.findViewById(R.id.tv_ssid_value);
             tv_capab = (TextView) view.findViewById(R.id.tv_capabilities_value);
             tv_frequency = (TextView) view.findViewById(R.id.tv_frequency_value);
@@ -66,6 +70,7 @@ public class WifiListAdapter extends BaseAdapter {
         final WifiViewHolder holder = (WifiViewHolder) rowView.getTag();
         WifiListItem wifi = dataList.get(position);
         holder.tv_bssid.setText(wifi.getBssid());
+        holder.tv_manufacturer.setText(dbHelper.queryManufacture(wifi.getBssid()));
         holder.tv_ssid.setText(wifi.getSsid());
         holder.tv_capab.setText(wifi.getCapabilities());
         StringBuilder channel = new StringBuilder("");

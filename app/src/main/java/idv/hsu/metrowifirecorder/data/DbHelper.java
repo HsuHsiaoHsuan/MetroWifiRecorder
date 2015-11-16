@@ -116,7 +116,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public int resetStationData(String station) {
-        int result = db.delete(DbSchema.TABLE_TRACKING, DbSchema.STATION + "=?", new String[] {station});
+        int result = db.delete(DbSchema.TABLE_TRACKING, DbSchema.STATION + "=?", new String[]{station});
         return result;
     }
 
@@ -130,12 +130,28 @@ public class DbHelper extends SQLiteOpenHelper {
                         DbSchema.FREQUENCY,
                         DbSchema.LEVEL,
                         DbSchema.STATION},
-                DbSchema.STATION + "=?", new String[] {station}, null, null, null);
+                DbSchema.STATION + "=?", new String[]{station}, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             return cursor;
         }
         return null;
+    }
+
+    public String queryManufacture(String mac) {
+        String query = mac.replace(":", "").substring(0, 6).toUpperCase();
+        Cursor cursor = db.query(DbSchema.TABLE_MANUFACTURE,
+                new String[] {DbSchema.MAC, DbSchema.MANUFACTURE},
+                DbSchema.MAC + "=?", new String[] {query}, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                return cursor.getString(cursor.getColumnIndexOrThrow(DbSchema.MANUFACTURE));
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 
     @Override
