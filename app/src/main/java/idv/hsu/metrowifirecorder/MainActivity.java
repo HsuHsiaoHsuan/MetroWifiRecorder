@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
                                     "level: " + scanResults.get(x).level
                     );
                 }
-//                if (DbSchema.AP_NAME.containsKey(result.SSID)) {
+                if (DbSchema.AP_NAME.containsKey(result.SSID)) {
                     ContentValues values = new ContentValues();
                     values.put(DbSchema.BSSID, result.BSSID);
                     values.put(DbSchema.SSID, result.SSID);
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                     values.put(DbSchema.LEVEL, result.level);
                     values.put(DbSchema.STATION, nowStation);
                     dbHelper.insertTracking(values);
-//                }
+                }
             }
             Toast.makeText(MainActivity.this, "現在站台：" + nowStation, Toast.LENGTH_SHORT).show();
             adapter.notifyDataSetChanged();
