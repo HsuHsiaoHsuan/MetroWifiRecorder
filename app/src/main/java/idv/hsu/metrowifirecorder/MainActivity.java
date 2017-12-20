@@ -1,14 +1,19 @@
 package idv.hsu.metrowifirecorder;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -205,7 +210,37 @@ public class MainActivity extends AppCompatActivity {
         dataList = new ArrayList<WifiListItem>();
         adapter = new WifiListAdapter(getLayoutInflater(), dataList, dbHelper);
         lv_data.setAdapter(adapter);
+
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        999);
+            }
+        }
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case 999:
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // permission was granted, yay! Do the
+//                    // contacts-related task you need to do.
+//                } else {
+//                    finish();
+//                    // permission denied, boo! Disable the
+//                    // functionality that depends on this permission.
+//                }
+//                return;
+//        }
+//    }
 
     @Override
     protected void onResume() {
@@ -306,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
                                     "level: " + scanResults.get(x).level
                     );
                 }
-                if (DbSchema.AP_NAME.containsKey(result.SSID)) {
+//                if (DbSchema.AP_NAME.containsKey(result.SSID)) {
                     ContentValues values = new ContentValues();
                     values.put(DbSchema.BSSID, result.BSSID);
                     values.put(DbSchema.SSID, result.SSID);
@@ -315,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
                     values.put(DbSchema.LEVEL, result.level);
                     values.put(DbSchema.STATION, nowStation);
                     dbHelper.insertTracking(values);
-                }
+//                }
             }
             Toast.makeText(MainActivity.this, "現在站台：" + nowStation, Toast.LENGTH_SHORT).show();
             adapter.notifyDataSetChanged();
